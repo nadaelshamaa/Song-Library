@@ -1,5 +1,6 @@
 package view;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -32,13 +33,18 @@ public class eventhandler {
 	@FXML TextField DAlbum;
 	@FXML TextField DYear;
 	
-	@FXML ListView<String> listView;
-	private ObservableList<String> obsList;
+	@FXML ListView<SongDetail> listView;
+	private ObservableList<SongDetail> obsList;
 	
 	public ArrayList <SongDetail> songDetails = new ArrayList<SongDetail>();
 	
 	public void start(Stage mainStage) throws IOException {
+		System.out.println("Starting creation");
 		createData();
+		obsList = FXCollections.observableList(songDetails);
+		listView.setItems(obsList);
+		listView.getSelectionModel().getSelectedItems();
+		
 	}
 	
 	public void add() {

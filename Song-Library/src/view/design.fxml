@@ -28,7 +28,7 @@
          </image>
       </ImageView>
       <Button fx:id="Delete" layoutX="288.0" layoutY="348.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="89.0" text="Delete" textAlignment="CENTER" />
-      <ListView fx:id="List" layoutX="21.0" layoutY="93.0" prefHeight="166.0" prefWidth="558.0" />
+      <ListView fx:id="listView" layoutX="21.0" layoutY="93.0" prefHeight="166.0" prefWidth="558.0" />
       <Button fx:id="Edit" layoutX="288.0" layoutY="299.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="89.0" text="Edit" />
       <TextField fx:id="DSong" layoutX="119.0" layoutY="292.0" prefHeight="27.0" prefWidth="138.0" promptText="My Blood">
          <font>
