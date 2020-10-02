@@ -1,3 +1,6 @@
+//NADA ELSHAMAA -> NHE12
+//AAMNA FAROOQ -> AF704
+
 package view;
 
 public class SongDetail{
@@ -42,10 +45,10 @@ public class SongDetail{
 	}
 
 	public String toString() {
-		return ("OBJECT SongName:"+this.getName()+
-				" Artist: "+ this.getArtist() +
-				" Album: "+ this.getAlbum() +
-				" Year : " + this.getYear());
+		String output = String.format("%-70s %-70s", this.getName(), this.getArtist());
+		return output;
+//		return (this.getName()+ '\t'+ '\t'+ '\t'+ '\t'+ '\t'+ '\t'+'\t'
+//				+ this.getArtist());
 	}
 
 
