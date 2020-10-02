@@ -1,4 +1,0 @@
-songname1	artist1	album1	year1
-songname2	artist2	album2	year2
-songname3	artist3	album3	year3
-songname4	artist4	album4	year4
