@@ -1,4 +1,0 @@
-bsong	bartist	album	2001
-csongsin	cartist	album	2002
-dsong	dartist	album	2003
-esong	eartist	album	2004
