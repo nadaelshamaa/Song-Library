@@ -3,6 +3,8 @@
 
 package view;
 
+import java.util.Comparator;
+
 public class SongDetail{
 	private String name;
 	private String artist;
@@ -50,6 +52,21 @@ public class SongDetail{
 //		return (this.getName()+ '\t'+ '\t'+ '\t'+ '\t'+ '\t'+ '\t'+'\t'
 //				+ this.getArtist());
 	}
+	
+	public static Comparator<SongDetail> NameComparator = new Comparator<SongDetail>() {
+
+		public int compare(SongDetail s1, SongDetail s2) {
+		   String songname1 = s1.getName().toUpperCase();
+		   String songname2 = s2.getName().toUpperCase();
+
+		   if (songname1.compareTo(songname2)==0) {
+			   String artistname1 = s1.getArtist().toUpperCase();
+			   String artistname2 = s2.getArtist().toUpperCase();
+			   return artistname1.compareTo(artistname2);
+		   }
+		   //ascending order
+		   return songname1.compareTo(songname2);
+	    }};
 
 
 }

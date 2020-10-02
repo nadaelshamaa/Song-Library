@@ -51,22 +51,22 @@
             <Font size="11.0" />
          </font>
       </TextField>
-      <Label fx:id="DSong" layoutX="146.0" layoutY="269.0" prefHeight="22.0" prefWidth="164.0" text="My Blood">
+      <Label fx:id="DSong" layoutX="146.0" layoutY="269.0" prefHeight="22.0" prefWidth="164.0" text="">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label fx:id="DArtist" layoutX="146.0" layoutY="300.0" prefHeight="15.0" prefWidth="138.0" text="Ellie Goulding">
+      <Label fx:id="DArtist" layoutX="146.0" layoutY="300.0" prefHeight="15.0" prefWidth="138.0" text="">
          <font>
             <Font size="12.0" />
          </font>
       </Label>
-      <Label fx:id="DAlbum" layoutX="146.0" layoutY="320.0" prefHeight="15.0" prefWidth="138.0" text="Haycon Days">
+      <Label fx:id="DAlbum" layoutX="146.0" layoutY="320.0" prefHeight="15.0" prefWidth="138.0" text="">
          <font>
             <Font size="12.0" />
          </font>
       </Label>
-      <Label fx:id="DYear" layoutX="146.0" layoutY="340.0" prefHeight="15.0" prefWidth="138.0" text="2012">
+      <Label fx:id="DYear" layoutX="146.0" layoutY="340.0" prefHeight="15.0" prefWidth="138.0" text="">
          <font>
             <Font size="12.0" />
          </font>

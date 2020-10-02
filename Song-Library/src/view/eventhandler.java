@@ -50,50 +50,36 @@ public class eventhandler {
 	public ArrayList <SongDetail> songDetails = new ArrayList<SongDetail>();
 
 	public void start(Stage mainStage) throws IOException {
-		//System.out.println("Starting creation");
 		createData();
 
-		obsList = FXCollections.observableArrayList(songDetails);
-		Comparator<SongDetail> comparator = Comparator.comparing(SongDetail::getName); 
-		FXCollections.sort(obsList, comparator);
+		obsList = FXCollections.observableArrayList(songDetails);		
+		obsList.sort((a,b) -> a.getName().compareToIgnoreCase(b.getName())==0 ? a.getArtist().compareToIgnoreCase(b.getArtist()) : a.getName().compareToIgnoreCase(b.getName()));
 		listView.setItems(obsList);
+		
 		// select the first item
-		listView.getSelectionModel().select(0);
-		updateSelection(listView.getSelectionModel().getSelectedItem());
+		if (!obsList.isEmpty()) {
+			listView.getSelectionModel().select(0);
+			//Update the details diplay bar
+			updateSelection(listView.getSelectionModel().getSelectedItem());
 
+		}
 
 		 //set listener for the items
-		listView
-		.getSelectionModel()
-		.selectedIndexProperty()
-		.addListener(
-				(obs, oldVal, newVal) -> 
-				showItem(mainStage));
-		
-//		FXCollections.sort(listView, new Comparator<SongDetail>() {
-//			@Override
-//			public int compare(SongDetail lhs, SongDetail rhs) {
-//				return lhs.getName().compareTo(rhs.getName());
-//			}
-//		});
-
-
+		listView.getSelectionModel().selectedIndexProperty().addListener((obs, oldVal, newVal) -> showItem(mainStage));
 	}
 
 	public void add() throws IOException {
+		//Makes sure user has at least entered Song and Artist name
 		if((ASong.getText().equals("")||ASong.getText().isEmpty()) ||  (AArtist.getText().equals("")||AArtist.getText().isEmpty())) {
 			Alert alert2 = new Alert(AlertType.ERROR);
 			alert2.setTitle("Error!");
-			alert2.setContentText("You must at least enter a song name and artist");
+			alert2.setContentText("You must at least enter a song and artist name");
 			alert2.showAndWait();
 			
-			ASong.setText("");
-			AArtist.setText("");
-			AAlbum.setText("");
-			AYear.setText("");
 			return;
 		}
 		
+		//Makes sure the user enter a number for Year
 		if (!AYear.getText().equals("") && !AYear.getText().isEmpty()) {
 			try {
 			    Integer.parseInt(AYear.getText());
@@ -103,24 +89,33 @@ public class eventhandler {
 				alert3.setContentText("Year must be a number");
 				alert3.showAndWait();
 				
-				ASong.setText("");
-				AArtist.setText("");
-				AAlbum.setText("");
 				AYear.setText("");
 				return;
 			}
 		}
 		
-		//check for duplicates
+		//Confirmation to add song
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm");
 		alert.setHeaderText("You have chosen to add a song to your playlist");
 		alert.setContentText("Are you sure?");
 		Optional<ButtonType> res = alert.showAndWait();
+		
+		String album=AAlbum.getText();
+		String year=AYear.getText();
 		if (res.get() == ButtonType.OK) {
-			SongDetail song = new SongDetail(ASong.getText(), AArtist.getText(), AAlbum.getText(), AYear.getText());
+			if (AAlbum.getText().isBlank()) {
+				album="no-entry";
+			}
+			
+			if (AYear.getText().isBlank()) {
+				year="no-entry";
+			}
+			
+			//Checking for duplicates
+			SongDetail song = new SongDetail(ASong.getText(), AArtist.getText(), album, year);
 			for (int i=0; i<songDetails.size(); i++) {
-				if (songDetails.get(i).getName().equals(ASong.getText()) && songDetails.get(i).getArtist().equals(AArtist.getText())) {
+				if (songDetails.get(i).getName().equalsIgnoreCase(ASong.getText()) && songDetails.get(i).getArtist().equalsIgnoreCase(AArtist.getText())) {
 					Alert alert1 = new Alert(AlertType.ERROR);
 					alert1.setTitle("Error!");
 					alert1.setContentText("The song you are trying to add already exists");
@@ -134,23 +129,28 @@ public class eventhandler {
 				}
 			}
 
+			//Adding the song
+			songDetails.add(song);
+			obsList.add(song);
+
+			//Sorting the observable list
+			obsList.sort((a,b) -> a.getName().compareToIgnoreCase(b.getName())==0 ? a.getArtist().compareToIgnoreCase(b.getArtist()) : a.getName().compareToIgnoreCase(b.getName()));
+			listView.getSelectionModel().select(obsList.indexOf(song));
+
+			//Reseting text fields
 			ASong.setText("");
 			AArtist.setText("");
 			AAlbum.setText("");
 			AYear.setText("");
-			
-			//Add it
-			songDetails.add(song);
-			obsList.add(song);
-			//Change the selection
+
+			//Changing the details in the display bar
 			updateSelection(song);
-			//Sort the list and display
-			//Update the file
+
+			//Updating the file
 			updateFile();			
-			
-//			Comparator<SongDetail> comparator = Comparator.comparing(SongDetail::getName); 
-//			FXCollections.sort(obsList, comparator);
 		}
+		
+		//Reset text fields if user selects cancel
 		ASong.setText("");
 		AArtist.setText("");
 		AAlbum.setText("");
@@ -158,44 +158,79 @@ public class eventhandler {
 	}
 	
 	public void delete() throws IOException {
+		//Checking if list is empty
+		if (obsList.isEmpty()) {
+			Alert alert2 = new Alert(AlertType.ERROR);
+			alert2.setTitle("Error!");
+			alert2.setContentText("The are no songs in your playlist");
+			alert2.showAndWait();
+			return;
+		}
+		
+		//Confirmation message
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm");
 		alert.setHeaderText("You have chosen to delete a song from your playlist");
 		alert.setContentText("Are you sure?");
 		Optional<ButtonType> res = alert.showAndWait();
 		if (res.get() == ButtonType.OK) {
-			//Delete the selected song
+			//Finding song in library
 			int i=0;
+			int index=0;
 			for (i=0; i<songDetails.size(); i++) {
-				if (songDetails.get(i).getName().equals(DSong.getText()) && songDetails.get(i).getArtist().equals(DArtist.getText()) && songDetails.get(i).getAlbum().equals(DAlbum.getText()) && songDetails.get(i).getYear().equals(DYear.getText())) {
+				if (songDetails.get(i).getName().equalsIgnoreCase(DSong.getText()) && songDetails.get(i).getArtist().equalsIgnoreCase(DArtist.getText()) && songDetails.get(i).getAlbum().equalsIgnoreCase(DAlbum.getText()) && songDetails.get(i).getYear().equalsIgnoreCase(DYear.getText())) {
+					//Removing the song
+					index=obsList.indexOf(songDetails.get(i));
 					obsList.remove(songDetails.get(i));
 					songDetails.remove(songDetails.get(i));
 					break;
 				}
 			}
-			//Change selection
-			if (i==songDetails.size()) {
-				updateSelection(songDetails.get(i-1));
+			
+			if (obsList.isEmpty()) {
+				//Reseting the text fields
+				DSong.setText("");
+				DArtist.setText("");
+				DAlbum.setText("");
+				DYear.setText("");
+				
+				//Update the file
+				updateFile();
+				return;
 			}
-			else if(i==0) {
-				updateSelection(songDetails.get(i+1));
+			
+			//Change details displayed and selection
+			
+			if (index==obsList.size()) {
+				System.out.print("Last element"+'\t');
+				System.out.println("i-> "+index);
+				updateSelection(songDetails.get(index-1));
+				listView.getSelectionModel().select(obsList.indexOf(songDetails.get(index-1)));
 			}
 			else {
-				updateSelection(songDetails.get(i-1));
+				System.out.print("Other"+'\t');
+				System.out.println("i-> "+index);
+				updateSelection(songDetails.get(index));
+				listView.getSelectionModel().select(obsList.indexOf(songDetails.get(index)));
 			}
+			
+			//Sorting the observable list
+			//obsList.sort((a,b) -> a.getName().compareToIgnoreCase(b.getName())==0 ? a.getArtist().compareToIgnoreCase(b.getArtist()) : a.getName().compareToIgnoreCase(b.getName()));
+			
 			//Update the file
 			updateFile();
-//			Comparator<SongDetail> comparator = Comparator.comparing(SongDetail::getName); 
-//			FXCollections.sort(obsList, comparator);
 		}
 	}
 
 	public void edit() throws IOException {
-		if((ESong.getText().equals("")||ESong.getText().isEmpty()) ||  (EArtist.getText().equals("")||EArtist.getText().isEmpty())) {
-			Alert alert2 = new Alert(AlertType.ERROR);
-			alert2.setTitle("Error!");
-			alert2.setContentText("You must at least enter a song name and artist");
-			alert2.showAndWait();
+		//Checking if list is empty
+		if (obsList.isEmpty()) {
+			Alert alert4 = new Alert(AlertType.ERROR);
+			alert4.setTitle("Error!");
+			alert4.setContentText("You cannot edit an empty playlist");
+			alert4.showAndWait();
+			
+			//Reseting the text fields
 			ESong.setText("");
 			EArtist.setText("");
 			EAlbum.setText("");
@@ -203,6 +238,22 @@ public class eventhandler {
 			return;
 		}
 		
+		//Making sure user has entered at least a Song and Artist name
+		if((ESong.getText().equals("")||ESong.getText().isEmpty()) ||  (EArtist.getText().equals("")||EArtist.getText().isEmpty())) {
+			Alert alert2 = new Alert(AlertType.ERROR);
+			alert2.setTitle("Error!");
+			alert2.setContentText("You must at least enter a song name and artist");
+			alert2.showAndWait();
+			
+			//Reseting the text fields
+			ESong.setText("");
+			EArtist.setText("");
+			EAlbum.setText("");
+			EYear.setText("");
+			return;
+		}
+		
+		//Making sure that user entered a number for Year
 		if (!EYear.getText().equals("") && !EYear.getText().isEmpty()) {
 			try {
 			    Integer.parseInt(EYear.getText());
@@ -212,6 +263,8 @@ public class eventhandler {
 				alert3.setContentText("Year must be a number");
 				alert3.showAndWait();
 				
+				
+				//Reseting the text fields
 				ESong.setText("");
 				EArtist.setText("");
 				EAlbum.setText("");
@@ -219,6 +272,8 @@ public class eventhandler {
 				return;
 			}
 		}
+		
+		//Confirmation Message
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm");
 		alert.setHeaderText("You have chosen to edit a song in your playlist");
@@ -226,12 +281,15 @@ public class eventhandler {
 		Optional<ButtonType> res = alert.showAndWait();
 		if (res.get() == ButtonType.OK) {
 			int i=0;
+			//Checking if the for duplicates
 			for (i=0; i<songDetails.size(); i++) {
-				if (songDetails.get(i).getName().equals(ESong.getText()) && songDetails.get(i).getArtist().equals(EArtist.getText())) {
+				if (songDetails.get(i).getName().equalsIgnoreCase(ESong.getText()) && songDetails.get(i).getArtist().equalsIgnoreCase(EArtist.getText())) {
 					Alert alert1 = new Alert(AlertType.ERROR);
 					alert1.setTitle("Error!");
 					alert1.setContentText("Song already exists");
 					alert1.showAndWait();
+					
+					//Reseting the text fields
 					ESong.setText("");
 					EArtist.setText("");
 					EAlbum.setText("");
@@ -239,27 +297,38 @@ public class eventhandler {
 					return;
 				}
 			}
+			
+			//Finding the song that user wants to edit
 			for (i=0; i<songDetails.size(); i++) {
-				if (songDetails.get(i).getName().equals(DSong.getText()) && songDetails.get(i).getArtist().equals(DArtist.getText()) && songDetails.get(i).getAlbum().equals(DAlbum.getText()) && songDetails.get(i).getYear().equals(DYear.getText())) {
+				if (songDetails.get(i).getName().equalsIgnoreCase(DSong.getText()) && songDetails.get(i).getArtist().equalsIgnoreCase(DArtist.getText()) && songDetails.get(i).getAlbum().equalsIgnoreCase(DAlbum.getText()) && songDetails.get(i).getYear().equalsIgnoreCase(DYear.getText())) {
+					//Editing the song
 					songDetails.get(i).setName(ESong.getText());
 					songDetails.get(i).setArtist(EArtist.getText());
 					songDetails.get(i).setAlbum(EAlbum.getText());
 					songDetails.get(i).setYear(EYear.getText());
 					obsList.set(i, new SongDetail(ESong.getText(), EArtist.getText(), EAlbum.getText(), EYear.getText()));
+					
+					//Sort the observable list
+					obsList.sort((a,b) -> a.getName().compareToIgnoreCase(b.getName())==0 ? a.getArtist().compareToIgnoreCase(b.getArtist()) : a.getName().compareToIgnoreCase(b.getName()));
 					break;
 				}
 			}
+			
+			//Reseting the text fields
 			ESong.setText("");
 			EArtist.setText("");
 			EAlbum.setText("");
 			EYear.setText("");
-			//Change selection
+			
+			//Change the displayed details and selection
 			updateSelection(songDetails.get(i));
+			listView.getSelectionModel().select(obsList.indexOf(songDetails.get(i)));
+			
 			//Update the file
 			updateFile();
-//			Comparator<SongDetail> comparator = Comparator.comparing(SongDetail::getName); 
-//			FXCollections.sort(obsList, comparator);
 		}
+		
+		//Reseting the text fields if the user selects cancel
 		ESong.setText("");
 		EArtist.setText("");
 		EAlbum.setText("");
@@ -295,6 +364,10 @@ public class eventhandler {
 	
 	public void showItem(Stage mainStage) {
 		SongDetail item = listView.getSelectionModel().getSelectedItem();
+		if (item==null) {
+			return;
+		}
+		
 		DSong.setText(item.getName());
 		DArtist.setText(item.getArtist());
 		DAlbum.setText(item.getAlbum());
@@ -316,25 +389,8 @@ public class eventhandler {
 			for (int i=0;i<readLine.length;i++){
 				String[] readElement = readLine[i].split("\\s+");
 
-				if (readElement.length==2) {
-					SongDetail songDetail = new SongDetail(readElement[0], readElement[1], "", "");  
-					songDetails.add(songDetail); 
-				}
-				else if (readElement.length==3) {
-					try {
-						Integer.parseInt(readElement[2]);
-						SongDetail songDetail = new SongDetail(readElement[0], readElement[1], "", readElement[2]);  
-						songDetails.add(songDetail); 
-					}catch(NumberFormatException e) {
-						SongDetail songDetail = new SongDetail(readElement[0], readElement[1], readElement[2], "");  
-						songDetails.add(songDetail); 
-					}
-					
-				}
-				else {
-					SongDetail songDetail = new SongDetail(readElement[0], readElement[1], readElement[2], readElement[3]);  
-					songDetails.add(songDetail); 
-				}
+				SongDetail songDetail = new SongDetail(readElement[0], readElement[1], readElement[2], readElement[3]);  
+				songDetails.add(songDetail); 
 			}
 		}
 		readSongs.close();
