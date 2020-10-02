@@ -69,6 +69,13 @@ public class eventhandler {
 		.addListener(
 				(obs, oldVal, newVal) -> 
 				showItem(mainStage));
+		
+//		FXCollections.sort(listView, new Comparator<SongDetail>() {
+//			@Override
+//			public int compare(SongDetail lhs, SongDetail rhs) {
+//				return lhs.getName().compareTo(rhs.getName());
+//			}
+//		});
 
 
 	}
@@ -211,7 +218,7 @@ public class eventhandler {
 	}
 
 	public void updateFile() throws IOException {
-		FileWriter f = new FileWriter("/Users/nadaelshamaa/git/Song Library/Song-Library/src/view/songs.txt");
+		FileWriter f = new FileWriter("songs.txt");
 		for (int i=0; i<songDetails.size(); i++) {
 			String s = songDetails.get(i).getName() + '\t' + songDetails.get(i).getArtist() + '\t' + songDetails.get(i).getAlbum() + '\t' + songDetails.get(i).getYear()+'\n'; 
 			f.write(s); 
@@ -220,7 +227,6 @@ public class eventhandler {
 	}
 	
 	public void showItem(Stage mainStage) {
-		System.out.println("here");
 		SongDetail item = listView.getSelectionModel().getSelectedItem();
 		System.out.println("name->>>"+item.getName());
 		DSong.setText(item.getName());
@@ -230,7 +236,9 @@ public class eventhandler {
 	}
 
 	public void createData() throws IOException{
-		Scanner readSongs = new Scanner(new File("/Users/nadaelshamaa/git/Song Library/Song-Library/src/view/songs.txt")).useDelimiter(",\\s*");
+		File f = new File("songs.txt");
+		System.out.println(f.getAbsolutePath());
+		Scanner readSongs = new Scanner(f).useDelimiter(",\\s*");
 
 		String readFile ="";
 		String []readLine;
