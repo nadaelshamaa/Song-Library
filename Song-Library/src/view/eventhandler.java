@@ -50,7 +50,7 @@ public class eventhandler {
 	public ArrayList <SongDetail> songDetails = new ArrayList<SongDetail>();
 
 	public void start(Stage mainStage) throws IOException {
-		System.out.println("Starting creation");
+		//System.out.println("Starting creation");
 		createData();
 
 		obsList = FXCollections.observableArrayList(songDetails);
@@ -81,12 +81,34 @@ public class eventhandler {
 	}
 
 	public void add() throws IOException {
-		if((ASong.getText().equals("")||ASong.getText().isEmpty()) &&  (AArtist.getText().equals("")||AArtist.getText().isEmpty())) {
+		if((ASong.getText().equals("")||ASong.getText().isEmpty()) ||  (AArtist.getText().equals("")||AArtist.getText().isEmpty())) {
 			Alert alert2 = new Alert(AlertType.ERROR);
 			alert2.setTitle("Error!");
 			alert2.setContentText("You must at least enter a song name and artist");
 			alert2.showAndWait();
+			
+			ASong.setText("");
+			AArtist.setText("");
+			AAlbum.setText("");
+			AYear.setText("");
 			return;
+		}
+		
+		if (!AYear.getText().equals("") && !AYear.getText().isEmpty()) {
+			try {
+			    Integer.parseInt(AYear.getText());
+			} catch(Exception e) {
+				Alert alert3 = new Alert(AlertType.ERROR);
+				alert3.setTitle("Error!");
+				alert3.setContentText("Year must be a number");
+				alert3.showAndWait();
+				
+				ASong.setText("");
+				AArtist.setText("");
+				AAlbum.setText("");
+				AYear.setText("");
+				return;
+			}
 		}
 		
 		//check for duplicates
@@ -103,10 +125,20 @@ public class eventhandler {
 					alert1.setTitle("Error!");
 					alert1.setContentText("The song you are trying to add already exists");
 					alert1.showAndWait();
+					
+					ASong.setText("");
+					AArtist.setText("");
+					AAlbum.setText("");
+					AYear.setText("");
 					return;
 				}
 			}
 
+			ASong.setText("");
+			AArtist.setText("");
+			AAlbum.setText("");
+			AYear.setText("");
+			
 			//Add it
 			songDetails.add(song);
 			obsList.add(song);
@@ -114,13 +146,15 @@ public class eventhandler {
 			updateSelection(song);
 			//Sort the list and display
 			//Update the file
-			updateFile();
-			System.out.println("now done updating and adding");
-			
+			updateFile();			
 			
 //			Comparator<SongDetail> comparator = Comparator.comparing(SongDetail::getName); 
 //			FXCollections.sort(obsList, comparator);
 		}
+		ASong.setText("");
+		AArtist.setText("");
+		AAlbum.setText("");
+		AYear.setText("");
 	}
 	
 	public void delete() throws IOException {
@@ -157,12 +191,33 @@ public class eventhandler {
 	}
 
 	public void edit() throws IOException {
-		if((ESong.getText().equals("")||ESong.getText().isEmpty()) &&  (EArtist.getText().equals("")||EArtist.getText().isEmpty())) {
+		if((ESong.getText().equals("")||ESong.getText().isEmpty()) ||  (EArtist.getText().equals("")||EArtist.getText().isEmpty())) {
 			Alert alert2 = new Alert(AlertType.ERROR);
 			alert2.setTitle("Error!");
 			alert2.setContentText("You must at least enter a song name and artist");
 			alert2.showAndWait();
+			ESong.setText("");
+			EArtist.setText("");
+			EAlbum.setText("");
+			EYear.setText("");
 			return;
+		}
+		
+		if (!EYear.getText().equals("") && !EYear.getText().isEmpty()) {
+			try {
+			    Integer.parseInt(EYear.getText());
+			} catch(Exception e) {
+				Alert alert3 = new Alert(AlertType.ERROR);
+				alert3.setTitle("Error!");
+				alert3.setContentText("Year must be a number");
+				alert3.showAndWait();
+				
+				ESong.setText("");
+				EArtist.setText("");
+				EAlbum.setText("");
+				EYear.setText("");
+				return;
+			}
 		}
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirm");
@@ -177,6 +232,10 @@ public class eventhandler {
 					alert1.setTitle("Error!");
 					alert1.setContentText("Song already exists");
 					alert1.showAndWait();
+					ESong.setText("");
+					EArtist.setText("");
+					EAlbum.setText("");
+					EYear.setText("");
 					return;
 				}
 			}
@@ -190,6 +249,10 @@ public class eventhandler {
 					break;
 				}
 			}
+			ESong.setText("");
+			EArtist.setText("");
+			EAlbum.setText("");
+			EYear.setText("");
 			//Change selection
 			updateSelection(songDetails.get(i));
 			//Update the file
@@ -197,6 +260,10 @@ public class eventhandler {
 //			Comparator<SongDetail> comparator = Comparator.comparing(SongDetail::getName); 
 //			FXCollections.sort(obsList, comparator);
 		}
+		ESong.setText("");
+		EArtist.setText("");
+		EAlbum.setText("");
+		EYear.setText("");
 	}
 
 	public void updateSelection(SongDetail song) {
@@ -228,7 +295,6 @@ public class eventhandler {
 	
 	public void showItem(Stage mainStage) {
 		SongDetail item = listView.getSelectionModel().getSelectedItem();
-		System.out.println("name->>>"+item.getName());
 		DSong.setText(item.getName());
 		DArtist.setText(item.getArtist());
 		DAlbum.setText(item.getAlbum());
@@ -237,7 +303,6 @@ public class eventhandler {
 
 	public void createData() throws IOException{
 		File f = new File("songs.txt");
-		System.out.println(f.getAbsolutePath());
 		Scanner readSongs = new Scanner(f).useDelimiter(",\\s*");
 
 		String readFile ="";
