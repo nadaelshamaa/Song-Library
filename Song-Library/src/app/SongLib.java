@@ -1,5 +1,8 @@
-//NADA ELSHAMAA -> NHE12
-//AAMNA FAROOQ -> AF704
+/*
+ * NADA ELSHAMAA -> NHE12
+ * AAMNA FAROOQ -> AF704
+*/
+
 package app;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

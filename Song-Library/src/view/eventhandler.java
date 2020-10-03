@@ -1,5 +1,7 @@
-//NADA ELSHAMAA -> NHE12
-//AAMNA FAROOQ -> AF704
+/*
+ * NADA ELSHAMAA -> NHE12
+ * AAMNA FAROOQ -> AF704
+*/
 
 package view;
 
@@ -214,9 +216,6 @@ public class eventhandler {
 				listView.getSelectionModel().select(obsList.indexOf(songDetails.get(index)));
 			}
 			
-			//Sorting the observable list
-			//obsList.sort((a,b) -> a.getName().compareToIgnoreCase(b.getName())==0 ? a.getArtist().compareToIgnoreCase(b.getArtist()) : a.getName().compareToIgnoreCase(b.getName()));
-			
 			//Update the file
 			updateFile();
 		}
@@ -302,11 +301,19 @@ public class eventhandler {
 			for (i=0; i<songDetails.size(); i++) {
 				if (songDetails.get(i).getName().equalsIgnoreCase(DSong.getText()) && songDetails.get(i).getArtist().equalsIgnoreCase(DArtist.getText()) && songDetails.get(i).getAlbum().equalsIgnoreCase(DAlbum.getText()) && songDetails.get(i).getYear().equalsIgnoreCase(DYear.getText())) {
 					//Editing the song
+					String album = EAlbum.getText();
+					if (album.isBlank()) {
+						album="no-entry";
+					}
+					String year = EYear.getText();
+					if (year.isBlank()) {
+						year="no-entry";
+					}
 					songDetails.get(i).setName(ESong.getText());
 					songDetails.get(i).setArtist(EArtist.getText());
-					songDetails.get(i).setAlbum(EAlbum.getText());
-					songDetails.get(i).setYear(EYear.getText());
-					obsList.set(i, new SongDetail(ESong.getText(), EArtist.getText(), EAlbum.getText(), EYear.getText()));
+					songDetails.get(i).setAlbum(album);
+					songDetails.get(i).setYear(year);
+					obsList.set(i, new SongDetail(ESong.getText(), EArtist.getText(), album, year));
 					
 					//Sort the observable list
 					obsList.sort((a,b) -> a.getName().compareToIgnoreCase(b.getName())==0 ? a.getArtist().compareToIgnoreCase(b.getArtist()) : a.getName().compareToIgnoreCase(b.getName()));
